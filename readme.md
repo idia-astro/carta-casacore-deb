@@ -15,6 +15,8 @@ sudo apt-get install carta-casacore
 
 ## Install carta-casacore from source
 
+The build dependencies are the same as for [casacore](https://github.com/casacore/casacore#requirements).
+
 ```
 git clone https://github.com/CARTAvis/carta-casacore.git
 
