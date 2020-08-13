@@ -139,8 +139,12 @@ ARCHIVE DESTINATION lib${LIB_SUFFIX}
 LIBRARY PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 
+
+set(CASA_CODE_PATH "casa6/casa5/code")
+
+
 install (FILES
-    ImageTypedefs.h
+    ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/imageanalysis/ImageTypedefs.h
      DESTINATION include/casacode/imageanalysis
     )
 
@@ -322,4 +326,95 @@ install (FILES
 	DESTINATION include/casacode/imageanalysis/Regions
 	)
 
+install (FILES 
+    ComponentModels/ComponentList.h
+    ComponentModels/ComponentShape.h
+    ComponentModels/ComponentType.h
+    ComponentModels/ConstantSpectrum.h
+    ComponentModels/DiskShape.h
+    ComponentModels/FluxCalcLogFreqPolynomial.h
+    ComponentModels/FluxCalcLogFreqPolynomial.tcc
+    ComponentModels/FluxCalcQS.h
+    ComponentModels/FluxCalc_SS_JPL_Butler.h
+    ComponentModels/FluxCalcVQS.h
+    ComponentModels/Flux.h
+    ComponentModels/Flux.tcc
+    ComponentModels/FluxStandard.h
+    ComponentModels/FluxStdsQS2.h
+    ComponentModels/FluxStdsQS.h
+    ComponentModels/FluxStdSrcs.h
+    ComponentModels/GaussianDeconvolver.h
+    ComponentModels/GaussianShape.h
+    ComponentModels/LimbDarkenedDiskShape.h
+    ComponentModels/PointShape.h
+    ComponentModels/SkyCompBase.h
+    ComponentModels/SkyComponent.h
+    ComponentModels/SkyComponentFactory.h
+    ComponentModels/SkyComponentFactory2.tcc
+    ComponentModels/SkyCompRep.h
+    ComponentModels/SpectralIndex.h
+    ComponentModels/SpectralModel.h
+    ComponentModels/TabularSpectrum.h
+    ComponentModels/C11Timer.h
+    ComponentModels/TwoSidedShape.h
+        DESTINATION include/casacode/components/ComponentModels
+)
+
+install (FILES 
+    SpectralComponents/CompiledSpectralElement.h
+    SpectralComponents/GaussianMultipletSpectralElement.h
+    SpectralComponents/GaussianSpectralElement.h
+    SpectralComponents/LogTransformedPolynomialSpectralElement.h
+    SpectralComponents/LorentzianSpectralElement.h
+    SpectralComponents/PCFSpectralElement.h
+    SpectralComponents/PolynomialSpectralElement.h
+    SpectralComponents/PowerLogPolynomialSpectralElement.h
+    SpectralComponents/ProfileFit1D.h
+    SpectralComponents/ProfileFit1D.tcc
+    SpectralComponents/Spectral2Estimate.tcc
+    SpectralComponents/SpectralElementFactory.h
+    SpectralComponents/SpectralElement.h
+    SpectralComponents/SpectralEstimate.h
+    SpectralComponents/SpectralFit2.tcc
+    SpectralComponents/SpectralFit.h
+    SpectralComponents/SpectralList2.tcc
+    SpectralComponents/SpectralListFactory.h
+    SpectralComponents/SpectralList.h
+        DESTINATION include/casacode/components/SpectralComponents
+)
+
+
+add_custom_target(
+    modify_variant_h
+    COMMAND cp ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/variant.h ${CMAKE_SOURCE_DIR}/imageanalysis
+    COMMAND sed -e 's/throw[(]error[)]/noexcept(false)/g' ${CMAKE_SOURCE_DIR}/imageanalysis/variant.h > ${CMAKE_SOURCE_DIR}/imageanalysis/variant.h.tmp
+    COMMAND mv ${CMAKE_SOURCE_DIR}/imageanalysis/variant.h.tmp ${CMAKE_SOURCE_DIR}/imageanalysis/variant.h
+)
+
+add_dependencies(casa_imageanalysis modify_variant_h)
+
+
+install (FILES
+         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/xerces.h
+         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/Quantity.h
+         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/array.h
+         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/record.h
+         #${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/variant.h
+         variant.h
+         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/casac.h
+         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/version.h
+         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/optionparser.h
+         DESTINATION include/casacode/stdcasa
+        )
+
+install (FILES
+         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/StdCasa/CasacSupport.h
+         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/StdCasa/string_conversions
+         DESTINATION include/casacode/stdcasa/StdCasa
+        )
+
+install (FILES
+         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/thread/Barrier.h
+         DESTINATION include/casacode/stdcasa/thread
+        )
 
