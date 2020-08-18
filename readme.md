@@ -1,6 +1,6 @@
 # Install carta-casacore
 
-First make sure that you have installed the casacore data, for example by installing the `casacore-data` package from the [KERN suite](https://launchpad.net/~kernsuite/+archive/ubuntu/kern-5).
+First make sure that you have installed the casacore data, for example by installing the `casacore-data` package from the [KERN suite](https://kernsuite.info/).
 
 The `casacore-data` package installs the data directory in `/usr/share`, and the `carta-casacore` package expects to find it in that location. That is also the default location used by the source build, but you can specify a custom location by adding a flag to `cmake`, for example `-DDATA_DIR=/usr/local/share/casacore/data`.
 
