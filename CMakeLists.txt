@@ -520,14 +520,25 @@ if (NOT BUILD_TESTING)
     set(EXCL_ALL EXCLUDE_FROM_ALL)
 endif (NOT BUILD_TESTING)
 
+# Custom SOVERSION for imageanalysis is derived from the casa minor version rather than the casacore minor version.
+# Check casa6/casa5/code/CMakeLists.txt, and update these values if they have changed:
+# set( CASA_VERSION_MAJOR   5   )
+# set( CASA_VERSION_MINOR   8   )
+# If the minor version has changed, bump this:
+set( CASA_PROJECT_SOVERSION   1   )
+
 # Determine the SOVERSION and define as compile variable.
 if (casa_soversion)
     set (LIB_VERSION "${casa_soversion}")
     set (LIB_SOVERSION "${casa_soversion}")
     set (CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib" )
+    set (CASA_LIB_VERSION "${casa_soversion}")
+    set (CASA_LIB_SOVERSION "${casa_soversion}")
 else( )
     set (LIB_VERSION "${PROJECT_SOVERSION}")
     set (LIB_SOVERSION "${PROJECT_SOVERSION}")
+    set (CASA_LIB_VERSION "${CASA_PROJECT_SOVERSION}")
+    set (CASA_LIB_SOVERSION "${CASA_PROJECT_SOVERSION}")
 endif( )
 
 # Add the modules to be built.
@@ -552,6 +563,13 @@ foreach (module ${_modules})
         endif (${module} STREQUAL scimath_f OR ${module} STREQUAL fits OR ${module} STREQUAL mirlib OR ${module} STREQUAL coordinates)
     endif (APPLE)
 endforeach (module)
+
+set_target_properties(
+      casa_imageanalysis
+      PROPERTIES
+          VERSION "${CASA_LIB_VERSION}"
+          SOVERSION "${CASA_LIB_SOVERSION}"
+)
 
 # Show summary.
 message (STATUS "CMAKE_SYSTEM .......... = ${CMAKE_SYSTEM}")
