@@ -385,13 +385,11 @@ install (FILES
 
 
 add_custom_target(
-    modify_variant_h
-    COMMAND cp ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/variant.h ${CMAKE_SOURCE_DIR}/imageanalysis
-    COMMAND sed -e 's/throw[(]error[)]/noexcept(false)/g' ${CMAKE_SOURCE_DIR}/imageanalysis/variant.h > ${CMAKE_SOURCE_DIR}/imageanalysis/variant.h.tmp
-    COMMAND mv ${CMAKE_SOURCE_DIR}/imageanalysis/variant.h.tmp ${CMAKE_SOURCE_DIR}/imageanalysis/variant.h
+    patch_stdcasa_variant
+    COMMAND sed -i 's/throw[(]error[)]//g' ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/variant.h ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/StdCasa/variant.cc
 )
 
-add_dependencies(casa_imageanalysis modify_variant_h)
+add_dependencies(casa_imageanalysis patch_stdcasa_variant)
 
 
 install (FILES
@@ -399,8 +397,7 @@ install (FILES
          ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/Quantity.h
          ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/array.h
          ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/record.h
-         #${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/variant.h
-         variant.h
+         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/variant.h
          ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/casac.h
          ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/version.h
          ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/optionparser.h
