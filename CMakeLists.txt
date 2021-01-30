@@ -26,13 +26,12 @@ if (POLICY CMP0074)
 endif()
 
 set(PROJECT_VERSION_MAJOR 3)
-set(PROJECT_VERSION_MINOR 4)
-set(PROJECT_VERSION_PATCH 0)
-set(PROJECT_VERSION
+set(PROJECT_VERSION_MINOR 1)
+set(PROJECT_VERSION_PATCH 2)
+set(PROJECT_VERSION 
   "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
-# Increment the PROJECT_SOVERSION every time you update VERSION_MINOR!
-SET(PROJECT_SOVERSION 5)
+SET(PROJECT_SOVERSION 3)
 
 SET(NO_SOVERSION FALSE CACHE BOOL "do not add version information to shared libraries")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
@@ -68,7 +67,6 @@ endif()
 
 # By default do not use ADIOS2, HDF5, FFTW3
 option (ENABLE_TABLELOCKING "Make locking for concurrent table access possible" YES)
-option (USE_READLINE "Build readline support" YES)
 option (USE_ADIOS2 "Build ADIOS2 " NO)
 option (USE_HDF5 "Build HDF5 " NO)
 option (USE_FFTW3 "Use FFTW instead of FFTPack" NO)
@@ -255,8 +253,8 @@ if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     endif()
 else()
     # Ensure clang is not complaining about unused arguments.
-    set(CMAKE_CXX_FLAGS "-Qunused-arguments ${CMAKE_CXX_FLAGS}")
-    set(CMAKE_C_FLAGS "-Qunused-arguments ${CMAKE_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "-Qunused-arguments ${CMAKE_CXX_FLAGS}")    
+    set(CMAKE_C_FLAGS "-Qunused-arguments ${CMAKE_C_FLAGS}")    
 endif()
 
 # Since 2015, we need pwrite and pwrite (POSIX 2001)
@@ -334,9 +332,7 @@ if (GSL_LIBRARY_PATH)
 endif (GSL_LIBRARY_PATH)
 
 find_package (DL)
-if (USE_READLINE)
-    find_package (Readline REQUIRED)
-endif (USE_READLINE)
+find_package (Readline)
 find_package (SOFA)
 if (USE_ADIOS2)
     set(USE_MPI ON)
@@ -375,7 +371,7 @@ if (_usewcs STREQUAL YES)
       message(WARNING "Casacore is not compatible with wcslib 5.14, see issue gh-384.")
     endif (WCSLIB_VERSION_STRING STREQUAL "5.14")
 endif (_usewcs STREQUAL YES)
-
+ 
 # Set the include directories and HAVE compiler variables
 include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})
 if (WCSLIB_FOUND)
@@ -536,8 +532,8 @@ add_subdirectory (imageanalysis)
 foreach (module ${_modules})
     add_subdirectory (casa6/casatools/casacore/${module})
     set_target_properties(
-      casa_${module}
-      PROPERTIES
+      casa_${module} 
+      PROPERTIES 
           VERSION "${LIB_VERSION}"
           SOVERSION "${LIB_SOVERSION}"
     )
@@ -627,7 +623,7 @@ endif (BUILD_PYTHON3)
 #                                or msfits  (fits,ms,msfits,derivedmscal)
 #                                or images  (fits,lattices,mirlib,coordinates,images)
 #                                - all
-#
+# 
 # List of possibly used external packages and where
 #  CFITSIO      fits
 #  WCSLIB       coordinates
