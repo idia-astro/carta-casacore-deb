@@ -1,0 +1,26 @@
+carta-casacore (2021.1.30-1) focal; urgency=medium
+
+  * Bumped upstream version.
+
+ -- Adrianna Pińska <adrianna.pinska@gmail.com>  Sat, 30 Jan 2021 04:04:57 +0200
+
+carta-casacore (2020.8.20-3) focal; urgency=medium
+
+  * Rebuild after changes to configuration in upstream repository.
+
+ -- Adrianna Pińska <adrianna.pinska@gmail.com>  Sat, 30 Jan 2021 03:06:53 +0200
+
+carta-casacore (2020.8.20-2) focal; urgency=medium
+
+  * Revised binary package split; merged image analysis dev and tools into 
+    existing casacore packages.
+
+ -- Adrianna Pińska <adrianna.pinska@gmail.com>  Thu, 28 Jan 2021 22:53:10 +0200
+
+carta-casacore (2020.8.20-1) focal; urgency=medium
+
+  * Initial commit of new package which more closely follows the structure of
+    other casacore packages. Using carta-casacore revision 95ed3eed and casa6
+    revision 37799d7b.
+
+ -- Adrianna Pińska <adrianna.pinska@gmail.com>  Fri, 22 Jan 2021 13:49:24 +0200
