@@ -23,6 +23,8 @@ Build-Depends: bison,
                libhdf5-dev
 Standards-Version: 4.1.4
 Homepage: https://github.com/CARTAvis/carta-casacore
+Vcs-Browser: https://github.com/idia-astro/carta-casacore-deb
+Vcs-Git: https://github.com/idia-astro/carta-casacore-deb.git
 
 Package: casacore-dev
 Section: libdevel
