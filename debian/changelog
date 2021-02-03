@@ -1,3 +1,10 @@
+carta-casacore (2021.2.4-1) focal; urgency=medium
+
+  * Bump upstream version for changes in feature branch; replace upstream cmake
+    fix with patch.
+
+ -- Adrianna Pińska <adrianna.pinska@gmail.com>  Thu, 04 Feb 2021 00:29:50 +0200
+
 carta-casacore (2021.1.30-2) focal; urgency=medium
 
   * Rebuild after updates to debian package metadata.
