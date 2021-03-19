@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Adrianna Pińska <adrianna.pinska@gmail.com>
 Build-Depends: bison,
                cmake (>= 1.6.2),
-               debhelper-compat (= 12),
+               debhelper-compat (= 11),
                dh-python,
                doxygen,
                flex,

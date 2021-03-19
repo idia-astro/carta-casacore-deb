@@ -1,3 +1,9 @@
+carta-casacore (3.4.0+5.8.0+2021.2.4-1~bionic1) bionic; urgency=medium
+
+  * Backport to Bionic.
+
+ -- Adrianna Pińska <adrianna.pinska@gmail.com>  Thu, 18 Mar 2021 15:08:20 +0200
+
 carta-casacore (3.4.0+5.8.0+2021.2.4-1~focal1) focal; urgency=medium
 
   * Rebuild for new PPA with revised version numbering. Using casa6 revision 
