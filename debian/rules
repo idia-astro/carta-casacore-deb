@@ -23,6 +23,9 @@ override_dh_auto_build-indep:
 	doxygen casa6/casatools/casacore/doxygen.cfg
 	rm -f doc/html/jquery.js
 
+override_dh_makeshlibs:
+	dh_makeshlibs -V
+
 override_dh_auto_test-indep override_dh_auto_install-indep:
 
 override_dh_auto_test-arch:

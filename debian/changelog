@@ -1,3 +1,9 @@
+carta-casacore (3.4.0+5.8.0+2021.2.4-1~bionic2) bionic; urgency=medium
+
+  * Rebuild to fix unversioned shlibs files.
+
+ -- Adrianna Pińska <adrianna.pinska@gmail.com>  Tue, 30 Mar 2021 01:35:53 +0200
+
 carta-casacore (3.4.0+5.8.0+2021.2.4-1~bionic1) bionic; urgency=medium
 
   * Backport to Bionic.
