@@ -4,20 +4,12 @@
 # export DH_VERBOSE=1
 
 export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
-ifeq ($(DEB_HOST_ARCH_CPU),i386)
-    export DEB_CXXFLAGS_MAINT_APPEND = -msse -msse2 -mfpmath=sse
-endif
-ifeq ($(DEB_HOST_ARCH_OS),hurd)
-    THREADS=OFF
-else
-    THREADS=ON
-endif
 
 %:
 	dh $@ --buildsystem=cmake
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DCMAKE_SKIP_INSTALL_RPATH=ON -DUSE_THREADS=$(THREADS) -DLIB_SUFFIX=/$(DEB_HOST_MULTIARCH) -DDATA_DIR=/var/lib/casacore/data -DUSE_FFTW3=ON -DUSE_HDF5=ON -DBUILD_PYTHON=OFF -DBUILD_PYTHON3=ON -DBUILD_TESTING=OFF -DUSE_OPENMP=ON -DUseCcache=1 -DHAS_CXX11=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo
+	dh_auto_configure -- -DUSE_THREADS=ON -DDATA_DIR=/var/lib/casacore/data -DUSE_FFTW3=ON -DUSE_HDF5=ON -DBUILD_PYTHON=OFF -DBUILD_PYTHON3=OFF -DBUILD_TESTING=OFF -DUSE_OPENMP=ON -DUseCcache=1 -DHAS_CXX11=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/opt/carta-casacore
 
 override_dh_auto_build-indep:
 	doxygen casa6/casatools/casacore/doxygen.cfg
@@ -25,6 +17,9 @@ override_dh_auto_build-indep:
 
 override_dh_makeshlibs:
 	dh_makeshlibs -V
+
+override_dh_shlibdeps:
+	dh_shlibdeps -Llibcartacasacore -l$(shell pwd)/debian/libcartacasacore/opt/carta-casacore/lib
 
 override_dh_auto_test-indep override_dh_auto_install-indep:
 

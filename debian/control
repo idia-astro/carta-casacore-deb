@@ -26,26 +26,11 @@ Homepage: https://github.com/CARTAvis/carta-casacore
 Vcs-Browser: https://github.com/idia-astro/carta-casacore-deb
 Vcs-Git: https://github.com/idia-astro/carta-casacore-deb.git
 
-Package: casacore-dev
+Package: carta-casacore-dev
 Section: libdevel
 Architecture: any
 Multi-Arch: same
-Depends: libcasa-casa5 (= ${binary:Version}),
-         libcasa-coordinates5 (= ${binary:Version}),
-         libcasa-derivedmscal5 (= ${binary:Version}),
-         libcasa-fits5 (= ${binary:Version}),
-         libcasa-images5 (= ${binary:Version}),
-         libcasa-lattices5 (= ${binary:Version}),
-         libcasa-meas5 (= ${binary:Version}),
-         libcasa-measures5 (= ${binary:Version}),
-         libcasa-mirlib5 (= ${binary:Version}),
-         libcasa-ms5 (= ${binary:Version}),
-         libcasa-msfits5 (= ${binary:Version}),
-         libcasa-python3-5 (= ${binary:Version}),
-         libcasa-scimath-f5 (= ${binary:Version}),
-         libcasa-scimath5 (= ${binary:Version}),
-         libcasa-tables5 (= ${binary:Version}),
-         libcasa-imageanalysis1 (= ${binary:Version}),
+Depends: libcartacasacore (= ${binary:Version}),
          ${misc:Depends}
 Pre-Depends: ${misc:Pre-Depends}
 Description: CASA core library development files
@@ -56,50 +41,14 @@ Description: CASA core library development files
  .
  The CASA image analysis module is also included.
  .
- This package contains the files for application development.
+ This package contains the files for application development required to build the CARTA image viewer.
 
-Package: casacore-doc
-Section: doc
-Architecture: all
-Multi-Arch: foreign
-Depends: ${misc:Depends}
-Suggests: casacore-dev
-Description: CASA core library (documentation)
- The casacore package contains the core libraries of the old
- AIPS++/CASA (Common Astronomy Software Applications) package. This
- split was made to get a better separation of core libraries and
- applications.
- .
- This package contains the API documentation.
-
-Package: casacore-tools
-Architecture: any
-Depends: python3, ${misc:Depends}, ${shlibs:Depends}
-Pre-Depends: ${misc:Pre-Depends}
-Description: Tools built with CASA
- The casacore package contains the core libraries of the old
- AIPS++/CASA (Common Astronomy Software Applications) package. This
- split was made to get a better separation of core libraries and
- applications.
- .
- This package contains the tools built with CASA core:
- .
-  * taql - query language for casacore tables
-  * measuresdata - create data tables for measures
-  * imageregrid, imagecalc, showtable, showtablelock, findmeastable,
-    fits2table, imreorder, casahdf5support, msselect,  image2fits,
-    imageslice, etc.
- .
- It also includes tools built with the CASA image analysis module:
- .
-  * imcollapse - collapse image along one or more axes.
-  * imfit - fit one or more elliptical Gaussian components on an image region(s).
-
-Package: libcasa-casa5
+Package: libcartacasacore
 Section: libs
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Pre-Depends: ${misc:Pre-Depends}
+Recommends: casacore-data
 Multi-Arch: same
 Description: CASA core modules
  The casacore package contains the core libraries of the old
@@ -107,239 +56,6 @@ Description: CASA core modules
  split was made to get a better separation of core libraries and
  applications.
  .
- This package contains the Core modules: Multi-dimensional arrays, Quantities
- (values with physical units), OS and IO interface classes, Containers (from
- pre-STL era), Miscellaneous modules for exceptions, tasking interface,
- command line input, logging, STL wrappers, and basic math classes and
- functors.
+ The CASA image analysis module is also included.
  .
- Most of the code has been developed before STL came into existence, so
- several classes in modules Containers and Utilities are superseded by their
- STL counterparts. However, they are still used in some casacore
- code. Furthermore, some classes offer some extra functionality compared to
- STL.
-
-Package: libcasa-scimath5
-Section: libs
-Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
-Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
-Description: CASA basic mathematical modules
- The casacore package contains the core libraries of the old
- AIPS++/CASA (Common Astronomy Software Applications) package. This
- split was made to get a better separation of core libraries and
- applications.
- .
- This package contains the mathematical modules n-dimensional functionals,
- linear and non-linear fitting, and miscellaneous.
-
-Package: libcasa-scimath-f5
-Section: libs
-Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
-Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
-Description: CASA scimath F library
- The casacore package contains the core libraries of the old
- AIPS++/CASA (Common Astronomy Software Applications) package. This
- split was made to get a better separation of core libraries and
- applications.
- .
- This package contains the Mathematical modules N-dim functionals,
- linear/non-linear fitting, and miscellaneous.
-
-Package: libcasa-python3-5
-Section: libs
-Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
-Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
-Description: CASA Python bindings
- The casacore package contains the core libraries of the old
- AIPS++/CASA (Common Astronomy Software Applications) package. This
- split was made to get a better separation of core libraries and
- applications.
- .
- This package contains the Python 3 bindings.
-
-Package: libcasa-tables5
-Section: libs
-Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
-Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
-Description: CASA table system
- The casacore package contains the core libraries of the old
- AIPS++/CASA (Common Astronomy Software Applications) package. This
- split was made to get a better separation of core libraries and
- applications.
- .
- This package contains the database-like table system with advanced query
- language (TaQL).
-
-Package: libcasa-measures5
-Section: libs
-Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
-Pre-Depends: ${misc:Pre-Depends}
-Recommends: casacore-data
-Multi-Arch: same
-Description: CASA measures library
- The casacore package contains the core libraries of the old
- AIPS++/CASA (Common Astronomy Software Applications) package. This
- split was made to get a better separation of core libraries and
- applications.
- .
- This package implements measures (i.e. quantities with references frames) and
- their persistency. Examples are the Hour-angle and Declination of a source at
- a certain time and observatory; an Ra/Dec for a certain mean epoch; an
- apparent frequency at a certain time given in eV; a local sidereal time at an
- observatory. Measures can be converted from one reference frame to another
- (and this possibility is its main reason for existence).
-
-Package: libcasa-lattices5
-Section: libs
-Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
-Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
-Description: CASA lattice library
- The casacore package contains the core libraries of the old
- AIPS++/CASA (Common Astronomy Software Applications) package. This
- split was made to get a better separation of core libraries and
- applications.
- .
- This package implements memory- or disk-based N-dimensional arrays (lattices)
- with masking, regions, expressions, and math.
-
-Package: libcasa-fits5
-Section: libs
-Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
-Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
-Description: CASA FITS library
- The casacore package contains the core libraries of the old
- AIPS++/CASA (Common Astronomy Software Applications) package. This
- split was made to get a better separation of core libraries and
- applications.
- .
- This package contains a C++ interface to read and write FITS files.
-
-Package: libcasa-ms5
-Section: libs
-Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
-Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
-Description: CASA MeasurementSet library
- The casacore package contains the core libraries of the old
- AIPS++/CASA (Common Astronomy Software Applications) package. This
- split was made to get a better separation of core libraries and
- applications.
- .
- This package contains the data format for visibility data as described in the
- MeasurementSet definition. The MeasurementSet is where all data are
- ultimately to be found in CASA.
-
-Package: libcasa-derivedmscal5
-Section: libs
-Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
-Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
-Description: CASA derived mscal library
- The casacore package contains the core libraries of the old
- AIPS++/CASA (Common Astronomy Software Applications) package. This
- split was made to get a better separation of core libraries and
- applications.
- .
- This package contains derived MeasurementSet quantities (like hourangle) that
- can be used as virtual table columns or as TaQL user defined functions.
-
-Package: libcasa-msfits5
-Section: libs
-Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
-Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
-Description: CASA msfits library
- The casacore package contains the core libraries of the old
- AIPS++/CASA (Common Astronomy Software Applications) package. This
- split was made to get a better separation of core libraries and
- applications.
- .
- This package contains the mapping of MeasurementSets to/from FITS.
-
-Package: libcasa-coordinates5
-Section: libs
-Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
-Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
-Description: CASA coordinates library
- The casacore package contains the core libraries of the old
- AIPS++/CASA (Common Astronomy Software Applications) package. This
- split was made to get a better separation of core libraries and
- applications.
- .
- This package contains the implementation of coordinates for astronomical
- images.
-
-Package: libcasa-images5
-Section: libs
-Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
-Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
-Description: CASA image processing library
- The casacore package contains the core libraries of the old
- AIPS++/CASA (Common Astronomy Software Applications) package. This
- split was made to get a better separation of core libraries and
- applications.
- .
- This package implements n-dimensional images with masks, coordinates, and
- history.
-
-Package: libcasa-meas5
-Section: libs
-Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
-Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
-Description: CASA functions handling measures
- The casacore package contains the core libraries of the old
- AIPS++/CASA (Common Astronomy Software Applications) package. This
- split was made to get a better separation of core libraries and
- applications.
- .
- This module extends TaQL (the Table Query Language) with functions handling
- measures. Currently it can handle directions, epochs, and positions.
-
-Package: libcasa-mirlib5
-Section: libs
-Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
-Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
-Description: CASA mirlib library
- The casacore package contains the core libraries of the old
- AIPS++/CASA (Common Astronomy Software Applications) package. This
- split was made to get a better separation of core libraries and
- applications.
- .
- This package implements the MIRIAN radio interferometry data reduction
- package that is of particular interest to users of the Australia Telescope
- Compact Array (ATCA).
-
-Package: libcasa-imageanalysis1
-Section: libs
-Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
-Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
-Description: CASA image analysis module
- This is a component of AIPS++/CASA (Common Astronomy Software Applications).
- .
- This package contains image analysis tools.
+ This package contains the libraries required as dependencies by the CARTA image viewer.
