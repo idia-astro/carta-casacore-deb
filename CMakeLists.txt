@@ -3,8 +3,16 @@
 #
 project(casacore)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/casa6/casatools/casacore/cmake")
-include_directories( BEFORE ${CMAKE_CURRENT_BINARY_DIR} "${CMAKE_CURRENT_LIST_DIR}/casa6/casatools/casacore" "${CMAKE_CURRENT_LIST_DIR}/casa6/casa5/code" "/opt/casa/03/include" )
-link_directories("/opt/casa/02/lib")
+
+include_directories( BEFORE ${CMAKE_CURRENT_BINARY_DIR} "${CMAKE_CURRENT_LIST_DIR}/casa6/casatools/casacore" "${CMAKE_CURRENT_LIST_DIR}/casa6/casatools/src/code")
+
+if (EXISTS /opt/casa/03/include)
+    include_directories("/opt/casa/03/include")
+endif()
+
+if (EXISTS /opt/casa/03/lib)
+    link_directories("/opt/casa/03/lib")
+endif()
 
 add_definitions( -DDBUS_CPP )
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")

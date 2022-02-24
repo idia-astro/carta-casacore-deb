@@ -108,6 +108,7 @@ ComponentModels/SkyCompRep.cc
 ComponentModels/ConstantSpectrum.cc
 ComponentModels/SpectralIndex.cc
 ComponentModels/PointShape.cc
+ComponentModels/PowerLogPoly.cc
 ComponentModels/TabularSpectrum.cc
 ComponentModels/GaussianDeconvolver.cc
 ComponentModels/SkyCompBase.cc
@@ -140,7 +141,7 @@ LIBRARY PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUT
 )
 
 
-set(CASA_CODE_PATH "casa6/casa5/code")
+set(CASA_CODE_PATH "casa6/casatools/src/code")
 
 
 install (FILES
@@ -347,6 +348,7 @@ install (FILES
     ComponentModels/GaussianShape.h
     ComponentModels/LimbDarkenedDiskShape.h
     ComponentModels/PointShape.h
+    ComponentModels/PowerLogPoly.h
     ComponentModels/SkyCompBase.h
     ComponentModels/SkyComponent.h
     ComponentModels/SkyComponentFactory.h

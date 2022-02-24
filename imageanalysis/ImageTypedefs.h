@@ -1,1 +1,1 @@
-../casa6/casa5/code/imageanalysis/ImageTypedefs.h
+../casa6/casatools/src/code/imageanalysis/ImageTypedefs.h
