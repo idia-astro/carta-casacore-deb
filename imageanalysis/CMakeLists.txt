@@ -398,7 +398,7 @@ add_dependencies(casa_imageanalysis patch_stdcasa_variant)
 install (FILES
          ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/xerces.h
          ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/Quantity.h
-         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/array.h
+         ${CMAKE_SOURCE_DIR}/casa5/code/stdcasa/array.h
          ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/record.h
          ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/variant.h
          ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/casac.h
