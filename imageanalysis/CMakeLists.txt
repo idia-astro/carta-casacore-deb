@@ -18,6 +18,15 @@
 #
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
+set(CASA_CODE_PATH "casa6/casatools/src/code")
+
+add_custom_target(
+    patch_stdcasa_variant
+    COMMAND sed -i.orig 's/throw[(]error[)]//g' ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/variant.h ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/StdCasa/variant.cc
+    COMMAND rm -f ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/variant.h.orig ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/StdCasa/variant.cc.orig
+)
+
+
 add_library (casa_imageanalysis
 
 Annotations/AnnAnnulus.cc
@@ -130,8 +139,6 @@ ${CASACORE_ARCH_LIBS}
 ${GSL_LIBRARIES}
 )
 
-add_subdirectory (apps)
-
 install (
 TARGETS casa_imageanalysis
 RUNTIME DESTINATION bin
@@ -139,10 +146,6 @@ LIBRARY DESTINATION lib${LIB_SUFFIX}
 ARCHIVE DESTINATION lib${LIB_SUFFIX}
 LIBRARY PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
-
-
-set(CASA_CODE_PATH "casa6/casatools/src/code")
-
 
 install (FILES
     ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/imageanalysis/ImageTypedefs.h
@@ -386,24 +389,13 @@ install (FILES
 )
 
 
-add_custom_target(
-    patch_stdcasa_variant
-    COMMAND sed -i.orig 's/throw[(]error[)]//g' ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/variant.h ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/StdCasa/variant.cc
-    COMMAND rm -f ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/variant.h.orig ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/StdCasa/variant.cc.orig
-)
-
-add_dependencies(casa_imageanalysis patch_stdcasa_variant)
-
 
 install (FILES
          ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/xerces.h
          ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/Quantity.h
-         ${CMAKE_SOURCE_DIR}/casa5/code/stdcasa/array.h
          ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/record.h
          ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/variant.h
-         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/casac.h
          ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/version.h
-         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/optionparser.h
          DESTINATION include/casacode/stdcasa
         )
 
