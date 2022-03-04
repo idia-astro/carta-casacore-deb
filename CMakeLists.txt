@@ -529,11 +529,9 @@ if (NOT BUILD_TESTING)
 endif (NOT BUILD_TESTING)
 
 # Custom SOVERSION for imageanalysis is derived from the casa minor version rather than the casacore minor version.
-# Check casa6/casa5/code/CMakeLists.txt, and update these values if they have changed:
-# set( CASA_VERSION_MAJOR   5   )
-# set( CASA_VERSION_MINOR   8   )
+# Check git tags for CASA version (currently 6.4.4)
 # If the minor version has changed, bump this:
-set( CASA_PROJECT_SOVERSION   1   )
+set( CASA_PROJECT_SOVERSION   2   )
 
 # Determine the SOVERSION and define as compile variable.
 if (casa_soversion)
