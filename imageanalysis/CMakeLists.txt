@@ -108,6 +108,7 @@ ComponentModels/SkyCompRep.cc
 ComponentModels/ConstantSpectrum.cc
 ComponentModels/SpectralIndex.cc
 ComponentModels/PointShape.cc
+ComponentModels/PowerLogPoly.cc
 ComponentModels/TabularSpectrum.cc
 ComponentModels/GaussianDeconvolver.cc
 ComponentModels/SkyCompBase.cc
@@ -129,8 +130,6 @@ ${CASACORE_ARCH_LIBS}
 ${GSL_LIBRARIES}
 )
 
-add_subdirectory (apps)
-
 install (
 TARGETS casa_imageanalysis
 RUNTIME DESTINATION bin
@@ -139,94 +138,92 @@ ARCHIVE DESTINATION lib${LIB_SUFFIX}
 LIBRARY PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 
-
-set(CASA_CODE_PATH "casa6/casa5/code")
-
+set(CASA_CODE_PATH "casa6/casatools/src/code")
 
 install (FILES
     ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/imageanalysis/ImageTypedefs.h
-     DESTINATION include/casacode/imageanalysis
+    DESTINATION include/casacode/imageanalysis
     )
 
 install (FILES
-	Annotations/AnnAnnulus.h
-	Annotations/AnnCenterBox.h
-	Annotations/AnnCircle.h
-	Annotations/AnnEllipse.h
-	Annotations/AnnLine.h
-	Annotations/AnnPolygon.h
-	Annotations/AnnPolyline.h
-	Annotations/AnnRectBox.h
-	Annotations/AnnRegion.h
-	Annotations/AnnRotBox.h
-	Annotations/AnnSymbol.h
-	Annotations/AnnText.h
-	Annotations/AnnVector.h
-	Annotations/AnnotationBase.h
-	Annotations/RegionTextList.h
-	DESTINATION include/casacode/imageanalysis/Annotations
-	)
+    Annotations/AnnAnnulus.h
+    Annotations/AnnCenterBox.h
+    Annotations/AnnCircle.h
+    Annotations/AnnEllipse.h
+    Annotations/AnnLine.h
+    Annotations/AnnPolygon.h
+    Annotations/AnnPolyline.h
+    Annotations/AnnRectBox.h
+    Annotations/AnnRegion.h
+    Annotations/AnnRotBox.h
+    Annotations/AnnSymbol.h
+    Annotations/AnnText.h
+    Annotations/AnnVector.h
+    Annotations/AnnotationBase.h
+    Annotations/RegionTextList.h
+    DESTINATION include/casacode/imageanalysis/Annotations
+    )
 install (FILES
-	IO/AsciiAnnotationFileLine.h
-	IO/FitterEstimatesFileParser.h
-	IO/FitterEstimatesFileParser2.tcc
-	IO/LogFile.h
+    IO/AsciiAnnotationFileLine.h
+    IO/FitterEstimatesFileParser.h
+    IO/FitterEstimatesFileParser2.tcc
+    IO/LogFile.h
     IO/ImageFitterResults.h
     IO/ImageFitterResults.tcc
     IO/ImageProfileFitterResults.h
     IO/OutputDestinationChecker.h
-	IO/ParameterParser.h
-	IO/ProfileFitterEstimatesFileParser.h
-	IO/RegionTextParser.h
-	DESTINATION include/casacode/imageanalysis/IO
-	)
+    IO/ParameterParser.h
+    IO/ProfileFitterEstimatesFileParser.h
+    IO/RegionTextParser.h
+    DESTINATION include/casacode/imageanalysis/IO
+    )
 install (FILES
-        Utilities/SpectralImageUtil.h
-	DESTINATION include/casacode/imageanalysis/Utilities
-         )
+    Utilities/SpectralImageUtil.h
+    DESTINATION include/casacode/imageanalysis/Utilities
+    )
 install (FILES
-	ImageAnalysis/BeamManipulator.h
-	ImageAnalysis/BeamManipulator.tcc
-	ImageAnalysis/CasaImageBeamSet.h
-	ImageAnalysis/ComponentImager.h
-	ImageAnalysis/ComponentListDeconvolver.h
+    ImageAnalysis/BeamManipulator.h
+    ImageAnalysis/BeamManipulator.tcc
+    ImageAnalysis/CasaImageBeamSet.h
+    ImageAnalysis/ComponentImager.h
+    ImageAnalysis/ComponentListDeconvolver.h
     ImageAnalysis/ComponentListDeconvolver.tcc
-	ImageAnalysis/Image1DSmoother.h
-	ImageAnalysis/Image1DSmoother.tcc
-	ImageAnalysis/Image2DConvolver.h
-	ImageAnalysis/Image2DConvolver.tcc
+    ImageAnalysis/Image1DSmoother.h
+    ImageAnalysis/Image1DSmoother.tcc
+    ImageAnalysis/Image2DConvolver.h
+    ImageAnalysis/Image2DConvolver.tcc
     ImageAnalysis/ImageBoxcarSmoother.h
     ImageAnalysis/ImageBoxcarSmoother.tcc
-	ImageAnalysis/ImageCollapser.h
-	ImageAnalysis/ImageCollapser.tcc
-	ImageAnalysis/ImageCollapserData.h
-	ImageAnalysis/ImageConcatenator.h
+    ImageAnalysis/ImageCollapser.h
+    ImageAnalysis/ImageCollapser.tcc
+    ImageAnalysis/ImageCollapserData.h
+    ImageAnalysis/ImageConcatenator.h
     ImageAnalysis/ImageConcatenator.tcc
     ImageAnalysis/ImageConvolver.h
-	ImageAnalysis/ImageConvolver.tcc
+    ImageAnalysis/ImageConvolver.tcc
     ImageAnalysis/ImageConvolverTask.h
     ImageAnalysis/ImageConvolverTask.tcc
-	ImageAnalysis/ImageCropper.h
-	ImageAnalysis/ImageCropper.tcc
-	ImageAnalysis/ImageDecimator.h
+    ImageAnalysis/ImageCropper.h
+    ImageAnalysis/ImageCropper.tcc
+    ImageAnalysis/ImageDecimator.h
     ImageAnalysis/ImageDecimator.tcc
     ImageAnalysis/ImageDecimatorData.h
-	ImageAnalysis/ImageDecomposer.h
-	ImageAnalysis/ImageDecomposer.tcc
+    ImageAnalysis/ImageDecomposer.h
+    ImageAnalysis/ImageDecomposer.tcc
     ImageAnalysis/ImageDecomposerTask.h
     ImageAnalysis/ImageDecomposerTask.tcc
-	ImageAnalysis/ImageExprCalculator.h
+    ImageAnalysis/ImageExprCalculator.h
     ImageAnalysis/ImageExprCalculator.tcc
-	ImageAnalysis/ImageFactory.h
-	ImageAnalysis/ImageFactory.tcc
-	ImageAnalysis/ImageFFT.h
+    ImageAnalysis/ImageFactory.h
+    ImageAnalysis/ImageFactory.tcc
+    ImageAnalysis/ImageFFT.h
     ImageAnalysis/ImageFFT.tcc
-	ImageAnalysis/ImageFFTer.h
-	ImageAnalysis/ImageFFTer.tcc
-	ImageAnalysis/ImageFitter.h
+    ImageAnalysis/ImageFFTer.h
+    ImageAnalysis/ImageFFTer.tcc
+    ImageAnalysis/ImageFitter.h
     ImageAnalysis/ImageFitter.tcc
-	ImageAnalysis/ImageFit1D.h
-	ImageAnalysis/ImageFit1D.tcc
+    ImageAnalysis/ImageFit1D.h
+    ImageAnalysis/ImageFit1D.tcc
     ImageAnalysis/ImageHanningSmoother.h
     ImageAnalysis/ImageHanningSmoother.tcc
     ImageAnalysis/ImageHistograms.h
@@ -235,9 +232,9 @@ install (FILES
     ImageAnalysis/ImageHistogramsCalculator.tcc
     ImageAnalysis/ImageHistory.h
     ImageAnalysis/ImageHistory.tcc
-	ImageAnalysis/ImageInputProcessor.h
-	ImageAnalysis/ImageInputProcessor2.tcc
-	ImageAnalysis/ImageMaskAttacher.h
+    ImageAnalysis/ImageInputProcessor.h
+    ImageAnalysis/ImageInputProcessor2.tcc
+    ImageAnalysis/ImageMaskAttacher.h
     ImageAnalysis/ImageMaskAttacher.tcc
     ImageAnalysis/ImageMaskedPixelReplacer.h
     ImageAnalysis/ImageMaskedPixelReplacer.tcc
@@ -247,24 +244,24 @@ install (FILES
     ImageAnalysis/ImageMaskHandler.tcc
     ImageAnalysis/ImageMaxFitter.h
     ImageAnalysis/ImageMaxFitter.tcc
-	ImageAnalysis/ImageMetaData.h
+    ImageAnalysis/ImageMetaData.h
     ImageAnalysis/ImageMetaData.tcc
     ImageAnalysis/ImageMetaDataBase.h
     ImageAnalysis/ImageMetaDataBase.tcc
     ImageAnalysis/ImageMetaDataRW.h
     ImageAnalysis/ImageMetaDataRW.tcc
-	ImageAnalysis/ImageMoments.h
-	ImageAnalysis/ImageMoments.tcc
-	ImageAnalysis/ImageMomentsTask.h
+    ImageAnalysis/ImageMoments.h
+    ImageAnalysis/ImageMoments.tcc
+    ImageAnalysis/ImageMomentsTask.h
     ImageAnalysis/ImageMomentsTask.tcc
     ImageAnalysis/ImageMomentsProgress.h
     ImageAnalysis/ImageMomentsProgressMonitor.h
-	ImageAnalysis/ImagePadder.h
-	ImageAnalysis/ImagePolarimetry.h
-	ImageAnalysis/ImagePolProxy.h
-	ImageAnalysis/ImagePolTask.h
-	ImageAnalysis/ImagePrimaryBeamCorrector.h
-	ImageAnalysis/ImageProfileFitter.h
+    ImageAnalysis/ImagePadder.h
+    ImageAnalysis/ImagePolarimetry.h
+    ImageAnalysis/ImagePolProxy.h
+    ImageAnalysis/ImagePolTask.h
+    ImageAnalysis/ImagePrimaryBeamCorrector.h
+    ImageAnalysis/ImageProfileFitter.h
     ImageAnalysis/ImageRebinner.h
     ImageAnalysis/ImageRebinner.tcc
     ImageAnalysis/ImageRegridder.h
@@ -273,59 +270,58 @@ install (FILES
     ImageAnalysis/ImageRegridderBase.tcc
     ImageAnalysis/ImageRotator.h
     ImageAnalysis/ImageRotator.tcc
-	ImageAnalysis/ImageSourceFinder.h
-	ImageAnalysis/ImageSourceFinder.tcc
-	ImageAnalysis/ImageStatsCalculator.h
+    ImageAnalysis/ImageSourceFinder.h
+    ImageAnalysis/ImageSourceFinder.tcc
+    ImageAnalysis/ImageStatsCalculator.h
     ImageAnalysis/ImageStatsCalculator.tcc
-	ImageAnalysis/ImageStatsBase.h
-	ImageAnalysis/ImageStatsBase.tcc
+    ImageAnalysis/ImageStatsBase.h
+    ImageAnalysis/ImageStatsBase.tcc
     ImageAnalysis/ImageStatsData.h
-	ImageAnalysis/ImageTask.h
+    ImageAnalysis/ImageTask.h
     ImageAnalysis/ImageTask.tcc
     ImageAnalysis/ImageTotalPolarization.h
-	ImageAnalysis/ImageTransposer.h
-	ImageAnalysis/ImageTwoPtCorr.h
-	ImageAnalysis/ImageTwoPtCorr.tcc
-	ImageAnalysis/LinearPolarizationAngleCalculator.h
-	ImageAnalysis/LinearPolarizationCalculator.h
-	ImageAnalysis/MomentsBase.h
-	ImageAnalysis/MomentsBase.tcc
-	ImageAnalysis/MomentCalcBase.h
-	ImageAnalysis/MomentCalcBase.tcc
-	ImageAnalysis/MomentClip.h
+    ImageAnalysis/ImageTransposer.h
+    ImageAnalysis/ImageTwoPtCorr.h
+    ImageAnalysis/ImageTwoPtCorr.tcc
+    ImageAnalysis/LinearPolarizationAngleCalculator.h
+    ImageAnalysis/LinearPolarizationCalculator.h
+    ImageAnalysis/MomentsBase.h
+    ImageAnalysis/MomentsBase.tcc
+    ImageAnalysis/MomentCalcBase.h
+    ImageAnalysis/MomentCalcBase.tcc
+    ImageAnalysis/MomentClip.h
     ImageAnalysis/MomentClip.tcc
     ImageAnalysis/MomentFit.h
-	ImageAnalysis/MomentFit.tcc
+    ImageAnalysis/MomentFit.tcc
     ImageAnalysis/MomentWindow.h
     ImageAnalysis/MomentWindow.tcc
-	ImageAnalysis/PeakIntensityFluxDensityConverter.h
-	ImageAnalysis/PeakIntensityFluxDensityConverter.tcc
-	ImageAnalysis/PixelValueManipulator.h
-	ImageAnalysis/PixelValueManipulator.tcc
-	ImageAnalysis/PixelValueManipulatorData.h
-	ImageAnalysis/ProfileFitResults.h
-	ImageAnalysis/PVGenerator.h
-	ImageAnalysis/SepImageConvolver.h
-	ImageAnalysis/SepImageConvolver.tcc
-	ImageAnalysis/SepImageConvolverTask.h
+    ImageAnalysis/PeakIntensityFluxDensityConverter.h
+    ImageAnalysis/PeakIntensityFluxDensityConverter.tcc
+    ImageAnalysis/PixelValueManipulator.h
+    ImageAnalysis/PixelValueManipulator.tcc
+    ImageAnalysis/PixelValueManipulatorData.h
+    ImageAnalysis/ProfileFitResults.h
+    ImageAnalysis/PVGenerator.h
+    ImageAnalysis/SepImageConvolver.h
+    ImageAnalysis/SepImageConvolver.tcc
+    ImageAnalysis/SepImageConvolverTask.h
     ImageAnalysis/SepImageConvolverTask.tcc
-	ImageAnalysis/SpectralCollapser.h
+    ImageAnalysis/SpectralCollapser.h
     ImageAnalysis/StatImageCreator.h
-	ImageAnalysis/SubImageFactory.h
-	ImageAnalysis/SubImageFactory.tcc
-	ImageAnalysis/TwoPointCorrelator.h
+    ImageAnalysis/SubImageFactory.h
+    ImageAnalysis/SubImageFactory.tcc
+    ImageAnalysis/TwoPointCorrelator.h
     ImageAnalysis/TwoPointCorrelator.tcc
-	DESTINATION include/casacode/imageanalysis/ImageAnalysis
-	)
+    DESTINATION include/casacode/imageanalysis/ImageAnalysis
+    )
 install (FILES
     Images/ComponentListImage.h
     DESTINATION include/casacode/imageanalysis/Images
     )
 install (FILES
-	Regions/CasacRegionManager.h
-	DESTINATION include/casacode/imageanalysis/Regions
-	)
-
+    Regions/CasacRegionManager.h
+    DESTINATION include/casacode/imageanalysis/Regions
+    )
 install (FILES 
     ComponentModels/ComponentList.h
     ComponentModels/ComponentShape.h
@@ -347,6 +343,7 @@ install (FILES
     ComponentModels/GaussianShape.h
     ComponentModels/LimbDarkenedDiskShape.h
     ComponentModels/PointShape.h
+    ComponentModels/PowerLogPoly.h
     ComponentModels/SkyCompBase.h
     ComponentModels/SkyComponent.h
     ComponentModels/SkyComponentFactory.h
@@ -357,8 +354,8 @@ install (FILES
     ComponentModels/TabularSpectrum.h
     ComponentModels/C11Timer.h
     ComponentModels/TwoSidedShape.h
-        DESTINATION include/casacode/components/ComponentModels
-)
+    DESTINATION include/casacode/components/ComponentModels
+    )
 
 install (FILES 
     SpectralComponents/CompiledSpectralElement.h
@@ -380,39 +377,25 @@ install (FILES
     SpectralComponents/SpectralList2.tcc
     SpectralComponents/SpectralListFactory.h
     SpectralComponents/SpectralList.h
-        DESTINATION include/casacode/components/SpectralComponents
-)
-
-
-add_custom_target(
-    patch_stdcasa_variant
-    COMMAND sed -i.orig 's/throw[(]error[)]//g' ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/variant.h ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/StdCasa/variant.cc
-    COMMAND rm -f ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/variant.h.orig ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/StdCasa/variant.cc.orig
-)
-
-add_dependencies(casa_imageanalysis patch_stdcasa_variant)
-
+    DESTINATION include/casacode/components/SpectralComponents
+    )
 
 install (FILES
-         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/xerces.h
-         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/Quantity.h
-         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/array.h
-         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/record.h
-         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/variant.h
-         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/casac.h
-         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/version.h
-         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/optionparser.h
-         DESTINATION include/casacode/stdcasa
-        )
+    ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/xerces.h
+    ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/Quantity.h
+    ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/record.h
+    ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/variant.h
+    ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/version.h
+    DESTINATION include/casacode/stdcasa
+    )
 
 install (FILES
-         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/StdCasa/CasacSupport.h
-         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/StdCasa/string_conversions
-         DESTINATION include/casacode/stdcasa/StdCasa
-        )
+    ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/StdCasa/CasacSupport.h
+    ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/StdCasa/string_conversions
+    DESTINATION include/casacode/stdcasa/StdCasa
+    )
 
 install (FILES
-         ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/thread/Barrier.h
-         DESTINATION include/casacode/stdcasa/thread
-        )
-
+    ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/thread/Barrier.h
+    DESTINATION include/casacode/stdcasa/thread
+    )

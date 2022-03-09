@@ -6,7 +6,7 @@ This is a custom version of casacore which includes the CASA image analysis comp
 
 Various parts of casacore depend on measures data. On Ubuntu we recommend installing the `casacore-data` package, either the default Ubuntu version or the package provided by the [KERN suite](https://kernsuite.info/).
 
-Note: Ubuntu `casacore-data` packages now install the data directory in `/var/lib` (although some files may be symbolic links to `/usr/share` or vice versa), and Ubuntu casacore packages expect to find it in that location. The default location used by our source build is still the more universal `/usr/share/casacore/data`, but you can specify a custom location by adding a flag to `cmake`, for example `-DDATA_DIR=/usr/local/share/casacore/data`.
+Note: Ubuntu `casacore-data` packages now install the data directory in `/var/lib` (although some files may be symbolic links to `/usr/share` or vice versa), and Ubuntu casacore packages expect to find it in that location. The location used by our source build is `${CMAKE_INSTALL_PREFIX}/share/casacore/data` (default `/usr/local/share/casacore/data`), but you can specify a custom location by adding a flag to `cmake`, for example `-DDATA_DIR=/usr/share/casacore/data`.
 
 ## Ubuntu packages
 
