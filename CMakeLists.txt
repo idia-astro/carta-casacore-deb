@@ -23,6 +23,11 @@ include(CheckCCompilerFlag)
 include(CheckFunctionExists)
 include(CheckCXXSourceCompiles)
 
+# Change ~/.casarc to ~/.carta/casarc to facilitate updating the CASA measures data in CARTA.
+add_custom_target(casarc_patch
+    COMMAND sed -i.orig 's|/.casarc:|/.carta/casarc:|g' ${CMAKE_SOURCE_DIR}/casa6/casatools/casacore/casa/System/Aipsrc.cc
+)
+
 # fixes warnings on cmake 3.x+ For now we want the old behavior to be backwards compatible
 if (POLICY CMP0048)
     cmake_policy (SET CMP0048 OLD)
@@ -529,9 +534,9 @@ if (NOT BUILD_TESTING)
 endif (NOT BUILD_TESTING)
 
 # Custom SOVERSION for imageanalysis is derived from the casa minor version rather than the casacore minor version.
-# Check git tags for CASA version (currently 6.4.4)
+# Check git tags for CASA version (currently 6.5.0)
 # If the minor version has changed, bump this:
-set( CASA_PROJECT_SOVERSION   2   )
+set( CASA_PROJECT_SOVERSION   3   )
 
 # Determine the SOVERSION and define as compile variable.
 if (casa_soversion)
