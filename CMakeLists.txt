@@ -23,11 +23,10 @@ include(CheckCCompilerFlag)
 include(CheckFunctionExists)
 include(CheckCXXSourceCompiles)
 
-# Change ~/.casarc to ~/.carta/casarc to facilitate updating the CASA measures data in CARTA.
-add_custom_target(casarc_patch
-    COMMAND sed -i.orig 's|/.casarc:|/.carta/casarc:|g' ${CMAKE_SOURCE_DIR}/casa6/casatools/casacore/casa/System/Aipsrc.cc
+# Change ~/.casarc to ~/.carta-casacore/casarc to facilitate updating the CASA measures data in CARTA.
+add_custom_target(casarc_patch ALL
+    COMMAND sed -i.orig 's|/.casarc:|/.carta-casacore/casarc:|g' ${CMAKE_SOURCE_DIR}/casa6/casatools/casacore/casa/System/Aipsrc.cc
 )
-
 # fixes warnings on cmake 3.x+ For now we want the old behavior to be backwards compatible
 if (POLICY CMP0048)
     cmake_policy (SET CMP0048 OLD)
@@ -580,6 +579,13 @@ set_target_properties(
       PROPERTIES
           VERSION "${CASA_LIB_VERSION}"
           SOVERSION "${CASA_LIB_SOVERSION}"
+)
+
+install(
+    FILES scripts/casa_data_autoupdate.sh
+    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+    RENAME casa_data_autoupdate
 )
 
 # Show summary.
