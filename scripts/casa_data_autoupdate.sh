@@ -42,19 +42,13 @@ function autoupdate {
     then	    
         $WGET $MEASURES_DATA_URL -P /tmp && $TAR_CMD -C $CASA_DATA_USER_DIR && $CLEAN_UP
         check_cmd_status # check if status code is zero and exit if not
-    else
-        echo "ERROR: $WGET command not found" >&2
-        echo "Trying curl"
-        
-	if [ -x "$(command -v $CURL)" ];
+    elif [ -x "$(command -v $CURL)" ];
 	then
-            $CURL $MEASURES_DATA_URL --output /tmp/WSRT_Measures.ztar && $TAR_CMD -C $CASA_DATA_USER_DIR && $CLEAN_UP
-            check_cmd_status # check if status code is zero and exit if not
-        else
-            echo "ERROR: $CURL is not installed." >&2
-	    echo "ERROR: Please install $WGET or $CURL." >&2
-            exit 1
-        fi
+        $CURL $MEASURES_DATA_URL --output /tmp/WSRT_Measures.ztar && $TAR_CMD -C $CASA_DATA_USER_DIR && $CLEAN_UP
+        check_cmd_status # check if status code is zero and exit if not
+    else
+	    echo "ERROR: Please install $WGET or $CURL. Exiting" >&2
+        exit 1
     fi
 
     echo "$(date)" > $CASA_DATA_USER_DIR/last_update
