@@ -61,16 +61,6 @@ function autoupdate {
     sleep 0.6 # let the progress bar update end
 }
 
-function datediff {
-    # date -j -f "%a %b %d %T %Z %Y" "`date`" "+%s" gives the number of seconds since the epoch
-    # LAST_UPDATE_DATE=$(cat $CASA_DATA_USER_DIR/last_update)
-    let LAST=$(date -j -f "%a %b %d %T %Z %Y" "`cat $CASA_DATA_USER_DIR/last_update`" "+%s")
-    let TODAY=$(date -j -f "%a %b %d %T %Z %Y" "`date`" "+%s")
-    let DIFF=TODAY-LAST
-    let DIFF=DIFF/86400
-    echo $DIFF
-}
-
 function launch_auto_update {
     # http://mywiki.wooledge.org/BashFAQ/034
     autoupdate &
@@ -101,14 +91,13 @@ function autoupdate_if_needed {
         fi
         if [ -f $CASA_DATA_USER_DIR/last_update ]
         then
-            DATE_DIFF=$(datediff)
-            if [ $DATE_DIFF -gt $UPDATE_INTERVAL ]
+            if [[ $(find "$CASA_DATA_USER_DIR/last_update" -mtime +$UPDATE_INTERVAL -print) ]]
             then
-                echo "CASA data has not been updated in $DATE_DIFF days. CARTA will try to update the ephemerides and geodetic data now."
+                echo "CASA data has not been updated in more than $UPDATE_INTERVAL days. CARTA will try to update the ephemerides and geodetic data now."
                 rm $CASA_DATA_USER_DIR/last_update
                 launch_auto_update
             else
-                echo "CASA data has been updated in the last $DATE_DIFF days. CARTA will not update the ephemerides and geodetic data."
+                echo "CASA data has been updated in the last $UPDATE_INTERVAL days. CARTA will not update the ephemerides and geodetic data."
                 exit 0
             fi
         else
