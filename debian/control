@@ -55,3 +55,17 @@ Description: CASA core modules
  The CASA image analysis module is also included.
  .
  This package contains the libraries required as dependencies by the CARTA image viewer.
+
+Package: carta-casacore-update
+Architecture: any
+Depends: python3, ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: Tools built with CASA
+ The casacore package contains the core libraries of the old
+ AIPS++/CASA (Common Astronomy Software Applications) package. This
+ split was made to get a better separation of core libraries and
+ applications.
+ .
+ The CASA image analysis module is also included.
+ .
+ This package contains a custom script which maintains up-to-date casacore data files used by the CARTA image viewer in a user directory. It is provided as an alternative to the casacore-data package, which is the default source of these files. If this package is installed, CARTA can be configured to download updated data on startup.

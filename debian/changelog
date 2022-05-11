@@ -1,3 +1,10 @@
+carta-casacore (3.4.0+6.5.0+2022.4.22-1~focal1) focal; urgency=medium
+
+  * Added a custom script for updating casacore data used by CARTA in a user 
+    directory.
+
+ -- Adrianna Pińska <adrianna.pinska@gmail.com>  Wed, 11 May 2022 10:19:33 +0200
+
 carta-casacore (3.4.0+6.5.0+2022.4.12-1~focal1) focal; urgency=medium
 
   * Bumped casa6 version; added config for data updates.
