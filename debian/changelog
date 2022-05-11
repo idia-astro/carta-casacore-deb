@@ -1,3 +1,9 @@
+carta-casacore (3.4.0+6.5.0+2022.5.11-1~focal1) focal; urgency=medium
+
+  * Fixed some update script errors.
+
+ -- Adrianna Pińska <adrianna.pinska@gmail.com>  Wed, 11 May 2022 16:07:41 +0200
+
 carta-casacore (3.4.0+6.5.0+2022.4.22-1~focal1) focal; urgency=medium
 
   * Added a custom script for updating casacore data used by CARTA in a user 
