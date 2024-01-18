@@ -381,7 +381,6 @@ install (FILES
     )
 
 install (FILES
-    ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/xerces.h
     ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/Quantity.h
     ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/record.h
     ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/variant.h
@@ -391,7 +390,7 @@ install (FILES
 
 install (FILES
     ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/StdCasa/CasacSupport.h
-    ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/StdCasa/string_conversions
+    ${CMAKE_SOURCE_DIR}/${CASA_CODE_PATH}/stdcasa/StdCasa/string_conversions.hpp
     DESTINATION include/casacode/stdcasa/StdCasa
     )
 
