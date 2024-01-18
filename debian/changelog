@@ -1,3 +1,9 @@
+carta-casacore (3.5.0+6.6.0+2024.1.18-1~focal1) focal; urgency=medium
+
+  * Updated casacore to 3.5.0 and casa6 to 6.6.0.
+
+ -- Adrianna Pińska <adrianna.pinska@gmail.com>  Thu, 18 Jan 2024 14:10:38 +0200
+
 carta-casacore (3.4.0+6.5.0+2022.5.11-1~focal1) focal; urgency=medium
 
   * Fixed some update script errors.
