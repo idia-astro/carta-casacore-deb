@@ -1,3 +1,9 @@
+carta-casacore (3.5.0+6.6.0+2024.1.18-1~noble1) noble; urgency=medium
+
+  * First Noble build.
+
+ -- Adrianna Pińska <adrianna.pinska@gmail.com>  Fri, 14 Feb 2025 15:57:31 +0200
+
 carta-casacore (3.5.0+6.6.0+2024.1.18-1~jammy1) jammy; urgency=medium
 
   * Updated casacore to 3.5.0 and casa6 to 6.6.0.
