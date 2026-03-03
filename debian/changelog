@@ -1,3 +1,9 @@
+carta-casacore (3.8.0+6.7.5+2026.3.3-1~jammy1) jammy; urgency=medium
+
+  * Updated casacore to 3.8.0 and casa6 to 6.7.5.
+
+ -- Adrianna Pińska <adrianna.pinska@gmail.com>  Tue, 03 Mar 2026 15:47:13 +0200
+
 carta-casacore (3.5.0+6.6.0+2024.1.18-1~jammy1) jammy; urgency=medium
 
   * Updated casacore to 3.5.0 and casa6 to 6.6.0.
