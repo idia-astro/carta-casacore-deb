@@ -1,36 +1,36 @@
-#
-# Casacore
-#
-project(casacore)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/casa6/casatools/casacore/cmake")
+cmake_minimum_required (VERSION 3.14.0)
 
-include_directories( BEFORE ${CMAKE_CURRENT_BINARY_DIR} "${CMAKE_CURRENT_LIST_DIR}/casa6/casatools/casacore" "${CMAKE_CURRENT_LIST_DIR}/casa6/casatools/src/code")
+project(casacore VERSION 3.8.0)
+set(_casacore_dir "casa6/casatools/casacore")
+set(_casacore_source_dir "${CMAKE_SOURCE_DIR}/${_casacore_dir}")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/${_casacore_dir}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-if (EXISTS /opt/casa/03/include)
-    include_directories("/opt/casa/03/include")
-endif()
+include_directories( BEFORE ${CMAKE_CURRENT_BINARY_DIR} "${CMAKE_CURRENT_LIST_DIR}/${_casacore_dir}" "${CMAKE_CURRENT_LIST_DIR}/casa6/casatools/src/code")
 
-if (EXISTS /opt/casa/03/lib)
-    link_directories("/opt/casa/03/lib")
-endif()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
-add_definitions( -DDBUS_CPP )
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-
-cmake_minimum_required (VERSION 3.3.0)
 include(CheckCXXCompilerFlag)
 include(CheckCCompilerFlag)
 include(CheckFunctionExists)
 include(CheckCXXSourceCompiles)
-include(casa6/casatools/casacore/cmake/PCHSupport.cmake)
+include(${_casacore_dir}/cmake/PCHSupport.cmake)
 
 # Change ~/.casarc to ~/.carta-casacore/casarc to facilitate updating the CASA measures data in CARTA.
 add_custom_target(casarc_patch ALL
-    COMMAND sed -i.orig 's|/.casarc:|/.carta-casacore/casarc:|g' ${CMAKE_SOURCE_DIR}/casa6/casatools/casacore/casa/System/Aipsrc.cc
+    COMMAND sed -i.orig 's|/.casarc:|/.carta-casacore/casarc:|g' ${_casacore_source_dir}/casa/System/Aipsrc.cc
 )
+
+# Silence internal deprecation warnings until https://github.com/casacore/casacore/issues/1460 is fixed
+add_custom_target(pi_patch ALL
+    COMMAND sed -i.orig 's/C::pi/M_PI/g' ${_casacore_source_dir}/lattices/LatticeMath/Fit2D*
+    COMMAND sed -i.orig 's/C::pi/M_PI/g' ${_casacore_source_dir}/scimath/Functionals/Lorentzian1DParam.tcc
+    COMMAND sed -i.orig 's/C::_1_pi/M_1_PI/g' ${_casacore_source_dir}/scimath/Functionals/Lorentzian1DParam.tcc
+)
+
 # fixes warnings on cmake 3.x+ For now we want the old behavior to be backwards compatible
 if (POLICY CMP0115)
-	cmake_policy (SET CMP0115 NEW)
+    cmake_policy (SET CMP0115 NEW)
 endif()
 
 # Enable <packageName>_ROOT variables for recent versions of CMake
@@ -38,14 +38,8 @@ if (POLICY CMP0074)
     cmake_policy (SET CMP0074 NEW)
 endif()
 
-set(PROJECT_VERSION_MAJOR 3)
-set(PROJECT_VERSION_MINOR 5)
-set(PROJECT_VERSION_PATCH 0)
-set(PROJECT_VERSION
-  "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
-
 # Increment the PROJECT_SOVERSION every time you update VERSION_MINOR!
-SET(PROJECT_SOVERSION 7)
+SET(PROJECT_SOVERSION 9)
 
 SET(NO_SOVERSION FALSE CACHE BOOL "do not add version information to shared libraries")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
@@ -58,12 +52,10 @@ set(CPACK_PACKAGE_CONTACT "Malte Marquarding") #required
 set(CPACK_PACKAGE_VENDOR "https://github.com/casacore/casacore")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Astronomical data processing library")
 
-enable_language (Fortran)
-
-# By default build only Python2 bindings
-option (BUILD_PYTHON "Build the python bindings" YES)
-option (BUILD_PYTHON3 "Build the python3 bindings" NO)
 option (BUILD_DEPRECATED "build and install deprecated classes (such as Map)" NO)
+option (BUILD_FFTPACK_DEPRECATED "build FFTPack" NO)
+option (BUILD_DYSCO "Build the Dysco compression storage manager" YES)
+option (BUILD_SISCO "Build the Sisco compression storage manager" NO)
 
 # By default build shared libraries
 option (ENABLE_SHARED "Build shared libraries" YES)
@@ -79,17 +71,16 @@ if (HAVE_O_DIRECT)
     add_definitions(-DHAVE_O_DIRECT)
 endif()
 
-# By default do not use ADIOS2, HDF5, FFTW3
+# By default do not use ADIOS2, MPI, or STACKTRACE
 option (ENABLE_TABLELOCKING "Make locking for concurrent table access possible" YES)
 option (USE_READLINE "Build readline support" YES)
 option (USE_ADIOS2 "Build ADIOS2 " NO)
-option (USE_HDF5 "Build HDF5 " NO)
-option (USE_FFTW3 "Use FFTW instead of FFTPack" NO)
+option (USE_HDF5 "Build HDF5 " YES)
 option (USE_THREADS "Use Mutex thread synchronization" YES)
-option (USE_OPENMP "Use OpenMP threading" NO)
+option (USE_OPENMP "Use OpenMP threading" YES)
 option (USE_MPI "Use MPI for parallel IO" NO)
 option (USE_STACKTRACE "Show stacktrace in case of exception" NO)
-option (CASA_BUILD "Building in the CASA (http://casa.nrao.edu) environment" NO)
+option (BUILD_TESTING "Enable build of the unit tests" NO)
 
 set(CASA_DEFAULT_ALIGNMENT "32" CACHE STRING "Default alignment of casa::AlignedAllocator")
 
@@ -107,51 +98,6 @@ if (UseCcache)
 endif()
 
 
-# basic setup for building within CASA environment
-if( CASA_BUILD )
-   if( NOT DATA_DIR )
-      set(DATA_DIR "%CASAROOT%/data")
-   endif( )
-   set(USE_FFTW3 ON)
-   set(USE_OPENMP ON)
-   set(USE_THREADS ON)
-   set(BUILD_PYTHON OFF)
-   set(Boost_NO_BOOST_CMAKE 1)
-   if (EXISTS "/opt/casa/02/include/python2.7")
-      ### RHEL7
-      set(PYTHON_LIBRARY "/opt/casa/02/lib/libpython2.7.so")
-      set(PYTHON_INCLUDE_DIR "/opt/casa/02/include/python2.7")
-      set(NUMPY_INCLUDE_DIRS "/opt/casa/02/lib/python2.7/site-packages/numpy/core/include")
-      set(PYTHON_EXECUTABLE:FILEPATH "/opt/casa/02/bin/python")
-      if (EXISTS "/usr/include/boost")
-         set(BOOST_ROOT "/usr")
-      endif( )
-      set(WCSLIB_INCLUDE_DIR "/opt/casa/02/include")
-      set(WCSLIB_LIBRARY "/opt/casa/02/lib/libwcs.so")
-      set(PYTHON2_NUMPY_INCLUDE_DIRS "/opt/casa/02/lib/python2.7/site-packages/numpy/core/include")
-   elseif (EXISTS "/opt/casa/01/include/python2.7")
-      ### RHEL7
-      set(PYTHON_LIBRARY "/opt/casa/01/lib/libpython2.7.so")
-      set(PYTHON_INCLUDE_DIR "/opt/casa/01/include/python2.7")
-      set(PYTHON_EXECUTABLE:FILEPATH "/opt/casa/01/bin/python")
-      if (EXISTS "/usr/include/boost")
-         set(BOOST_ROOT "/usr")
-      endif( )
-   elseif(EXISTS "/usr/lib64/casa/01/include/python2.7")
-      ### RHEL5/RHEL6
-      set(PYTHON_LIBRARY "/usr/lib64/casa/01/lib/libpython2.7.so")
-      set(PYTHON_INCLUDE_DIR "/usr/lib64/casa/01/include/python2.7")
-      set(PYTHON_EXECUTABLE:FILEPATH "/usr/lib64/casa/01/bin/python")
-      if (EXISTS "/usr/lib64/casa/01/include/boost")
-         ### RHEL5
-         set(BOOST_ROOT "/usr/lib64/casa/01")
-      elseif (EXISTS "/usr/include/boost")
-         ### RHEL6
-         set(BOOST_ROOT="/usr")
-      endif( )
-   endif( )
-endif( )
-
 # Test if shared libraries have to be built.
 if (ENABLE_SHARED)
     option (BUILD_SHARED_LIBS "" YES)
@@ -162,31 +108,9 @@ if (ENABLE_SHARED)
         set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
         set(CMAKE_MACOSX_RPATH TRUE)
     endif (ENABLE_RPATH)
-    if( CASA_BUILD )
-        option(NO_SOVERSION "Build shared libraries without version information" NO)
-        if( NOT NO_SOVERSION )
-            set( epochdelta 1385614800 )
-            execute_process( COMMAND perl -e "$t=time( )-${epochdelta};$z=$t & 0xff; $y=($t>>8)&0xff; $x=($t>>16)&0xffff; print \"$x.$y.$z\""
-                             OUTPUT_VARIABLE __casa_soversion )
-            set(casa_soversion ${__casa_soversion} CACHE STRING "version for shared objects")
-            message( STATUS "Shared object version number ${casa_soversion}" )
-            file( WRITE ${CMAKE_INSTALL_PREFIX}/casa_sover.txt
-                "# generated by casacore/CMakeList.txt... Do not edit\n"
-                "${casa_soversion}\n" )
-        else( )
-            message( STATUS "User disabled shared library versioning" )
-        endif( )
-    endif( )
 else()
     option (BUILD_SHARED_LIBS "" NO)
 endif (ENABLE_SHARED)
-
-if (UseCasaNamespace)
-    add_definitions (-DUseCasaNamespace)
-    message (STATUS "Using namespace casa. This will be deprecated at some point.")
-else ()
-    message (STATUS "Using namespace casacore.")
-endif ()
 
 # Define the compiler flags to be used.
 # Note: -Wshadow and -Wunreachable-code give (too) many warnings.
@@ -194,15 +118,10 @@ endif ()
 # Clang gives warning on bison generated code; disable unneeded-internal-declaration.
 if (NOT CMAKE_CXX_FLAGS)
     set (CMAKE_CXX_FLAGS "-Wextra -Wall -W -Wpointer-arith -Woverloaded-virtual -Wwrite-strings -pedantic -Wno-long-long")
-#SET(CMAKE_CXX_FLAGS="-g -O0 -Wall -Wextra -Wshadow -Wunused-variable
-# -Wunused-parameter -Wunused-function -Wunused -Wno-system-headers
-# -Wno-deprecated -Woverloaded-virtual -Wwrite-strings -fprofile-arcs
-# -ftest-coverage -Wold-style-cast -Weffc++ -Wconversion")
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unneeded-internal-declaration")
     endif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 endif (NOT CMAKE_CXX_FLAGS)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsigned-char")
 
 # Set build type if not given.
 if (NOT CMAKE_BUILD_TYPE)
@@ -210,6 +129,7 @@ if (NOT CMAKE_BUILD_TYPE)
     get_filename_component(_cmpvar ${CMAKE_BINARY_DIR} NAME)
     if(_cmpvar STREQUAL "dbg" OR _cmpvar STREQUAL "debug")
         set (CMAKE_BUILD_TYPE Debug)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DAIPS_DEBUG")
     else()
         if(_cmpvar STREQUAL "cov")
             set (CMAKE_BUILD_TYPE Debug)
@@ -222,62 +142,34 @@ if (NOT CMAKE_BUILD_TYPE)
     endif(_cmpvar STREQUAL "dbg" OR _cmpvar STREQUAL "debug")
 endif (NOT CMAKE_BUILD_TYPE)
 
-# Detect if the compiler supports C++11 if we want to use it.
-check_cxx_compiler_flag(-std=c++11 HAS_CXX11)
-if (HAS_CXX11)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-else()
-    message(FATAL_ERROR "Casacore build requires a c++11 compatible compiler")
-endif (HAS_CXX11)
+# Sisco requires a C++20 compatible compiler. If Sisco is not built, fall back to C++17 for the
+# time being.
+if(BUILD_SISCO)
+  set(CMAKE_CXX_STANDARD 20)
+else(BUILD_SISCO)
+  set(CMAKE_CXX_STANDARD 17)
+endif(BUILD_SISCO)
 
-# use faster fortran rules for complex operations, removes restoring complex
-# infinities if naive computation results in NAN + NAN * I
-#Handling complex multiplication and division with correct treating of complex
-#infinities (one element Inf regardless of the other) according to the C is
-#complicated.
-#E.g. a = NaN + 1e30 i; a * a is not NaN but a complex infinity (-Inf - NaN).
-#
-#Treating this situation correctly has large performance impact. In GCC's
-#implementation it is about 4 times slower than the naive implementation, with
-#vectorization enabled the impact is even larger.
-#As correct treatment of complex infinities when NaN appear in results is seldom
-#accounted for, or not required and most other languages do not have these
-#rules, the correct treatmeant can be disabled with the -fcx-fortran-rules flag.
-#This changes the semantics to those of the FORTRAN language which is removes
-#the need for rescuing the result when NaN appear. Python also follows FORTRAN
-#rules.
-#Additionally the correct behavior is not implemented in all compilers,
-#most notably clang which is the default compiler on MacOS. So turning off
-#correct treatment with GCC does not only make our code faster but also behave
-#the same on more compilers.
-#
-#This has measurable impact on e.g. applycal where the cpu performance improves
-#by about 20%.
-# For one reason or another the check on the compiler flag has no
-# effect; it still adds the option which fails for clang.
-if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    check_cxx_compiler_flag(-fcx-fortran-rules HAS_GXX_FORTRAN_RULES)
-    check_c_compiler_flag(-fcx-fortran-rules HAS_GCC_FORTRAN_RULES)
-    # added before cmake flags so it can be disabled with
-    # -fno-cx-fortran-rules for testing
-    if (HAS_GXX_FORTRAN_RULES)
-        set(CMAKE_CXX_FLAGS "-fcx-fortran-rules ${CMAKE_CXX_FLAGS}")
-    endif()
-    if (HAS_GCC_FORTRAN_RULES)
-        set(CMAKE_C_FLAGS "-fcx-fortran-rules ${CMAKE_C_FLAGS}")
-    endif()
-else()
-    # Ensure clang is not complaining about unused arguments.
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Ensure clang is not complaining about unused arguments.
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS "-Qunused-arguments ${CMAKE_CXX_FLAGS}")
     set(CMAKE_C_FLAGS "-Qunused-arguments ${CMAKE_C_FLAGS}")
 endif()
 
-# Since 2015, we need pwrite and pwrite (POSIX 2001)
+# Since 2015, we need pread and pwrite (POSIX 2001)
 check_function_exists(pread HAVE_PREAD)
 check_function_exists(pwrite HAVE_PWRITE)
 if (NOT (HAVE_PREAD AND HAVE_PWRITE))
         message(FATAL_ERROR "Casacore requires pread and pwrite functionality" )
 endif (NOT (HAVE_PREAD AND HAVE_PWRITE))
+
+# Since 2020, we need GCC 4.9 for regex support
+# Additionally we need cmake 2.8.10 for CMAKE_CXX_COMPILER_VERSION
+if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
+    message(FATAL_ERROR "Casacore requires at least gcc-4.9")
+endif()
 
 # FindHDF5 uses environment variables, so set it if needed.
 if (HDF5_ROOT_DIR)
@@ -288,8 +180,9 @@ endif (HDF5_ROOT_DIR)
 if (NOT MODULE)
    set (MODULE all)
 endif (NOT MODULE)
-set (_usebison YES)
-set (_uselapack YES)
+set (_usebison NO)
+set (_uselapack NO)
+set (_usefortran NO)
 set (_usefits NO)
 set (_usewcs NO)
 set (_modules casa)
@@ -300,6 +193,7 @@ if (NOT ${MODULE} STREQUAL "casa")
     if (NOT ${MODULE} STREQUAL "tables")
         set (_modules ${_modules} scimath_f scimath measures meas)
         set (_uselapack YES)
+        set (_usefortran YES)
         if (NOT ${MODULE} STREQUAL "measures")
             if (${MODULE} STREQUAL "ms")
                 set (_modules ${_modules} ms derivedmscal)
@@ -322,66 +216,96 @@ if (_usefits)
 endif()
 set (_modules ${_modules} ${_modules2})
 
-if (BUILD_PYTHON)
-    set (_modules ${_modules} python)
-endif (BUILD_PYTHON)
-
-if (BUILD_PYTHON3)
-    set (_modules ${_modules} python3)
-endif (BUILD_PYTHON3)
-
 
 # Determine which external packages to use.
 include (CTest)
 
-# Decrease test timeout. Valgrind times are excessive and need much more.
-#set (CTEST_TEST_TIMEOUT 150 CACHE STRING
-#    "Maximum ctest -S time allowed before CTest will kill the test." FORCE)
-# Already a cache var. It can be overridden using ctest --timeout N
-#set (DART_TESTING_TIMEOUT 150 CACHE STRING
-#    "Maximum ctest time allowed before CTest will kill the test." FORCE)
+if (_usefortran)
+  enable_language (Fortran)
 
-find_package (GSL REQUIRED)
-if (GSL_LIBRARY_PATH)
-    set(GSL_LIBRARIES "-L${GSL_LIBRARY_PATH} ${GSL_LIBRARIES}")
-endif (GSL_LIBRARY_PATH)
+  # use faster fortran rules for complex operations, removes restoring complex
+  # infinities if naive computation results in NAN + NAN * I
+  #Handling complex multiplication and division with correct treating of complex
+  #infinities (one element Inf regardless of the other) according to the C is
+  #complicated.
+  #E.g. a = NaN + 1e30 i; a * a is not NaN but a complex infinity (-Inf - NaN).
+  #
+  #Treating this situation correctly has large performance impact. In GCC's
+  #implementation it is about 4 times slower than the naive implementation, with
+  #vectorization enabled the impact is even larger.
+  #As correct treatment of complex infinities when NaN appear in results is seldom
+  #accounted for, or not required and most other languages do not have these
+  #rules, the correct treatmeant can be disabled with the -fcx-fortran-rules flag.
+  #This changes the semantics to those of the FORTRAN language which is removes
+  #the need for rescuing the result when NaN appear. Python also follows FORTRAN
+  #rules.
+  #Additionally the correct behavior is not implemented in all compilers,
+  #most notably clang which is the default compiler on MacOS. So turning off
+  #correct treatment with GCC does not only make our code faster but also behave
+  #the same on more compilers.
+  #
+  #This has measurable impact on e.g. applycal where the cpu performance improves
+  #by about 20%.
+  # For one reason or another the check on the compiler flag has no
+  # effect; it still adds the option which fails for clang.
+  if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+      check_cxx_compiler_flag(-fcx-fortran-rules HAS_GXX_FORTRAN_RULES)
+      check_c_compiler_flag(-fcx-fortran-rules HAS_GCC_FORTRAN_RULES)
+      # added before cmake flags so it can be disabled with
+      # -fno-cx-fortran-rules for testing
+      if (HAS_GXX_FORTRAN_RULES)
+          set(CMAKE_CXX_FLAGS "-fcx-fortran-rules ${CMAKE_CXX_FLAGS}")
+      endif()
+      if (HAS_GCC_FORTRAN_RULES)
+          set(CMAKE_C_FLAGS "-fcx-fortran-rules ${CMAKE_C_FLAGS}")
+      endif()
+  endif()
+endif()
 
 find_package (DL)
 if (USE_READLINE)
     find_package (Readline REQUIRED)
 endif (USE_READLINE)
-find_package (SOFA)
+
+if (BUILD_TESTING)
+    find_package (SOFA)
+endif()
+
 if (USE_ADIOS2)
-    set(USE_MPI ON)
-    message (STATUS "MPI is enabled as required by ADIOS2")
-    find_package (ADIOS2 CONFIG REQUIRED)
-    if (NOT ADIOS2_HAVE_MPI)
-        message (FATAL_ERROR "ADIOS2 found without MPI support.")
-    endif (NOT ADIOS2_HAVE_MPI)
+    find_package (ADIOS2 2.6.0 CONFIG REQUIRED)
+    if(NOT USE_MPI)
+        set(CASACORE_ADIOS_LIBRARY adios2::cxx11)
+    elseif (NOT ADIOS2_HAVE_MPI)
+        message(FATAL_ERROR "ADIOS2 found without MPI support but MPI support requested")
+    else()
+        set(CASACORE_ADIOS_LIBRARY adios2::cxx11_mpi)
+    endif()
 endif (USE_ADIOS2)
+
 if (USE_HDF5)
     find_package (HDF5 REQUIRED)
 endif (USE_HDF5)
+
 if (_usebison STREQUAL YES)
     find_package (FLEX REQUIRED)
-    find_package (BISON REQUIRED)
+    find_package (BISON 3 REQUIRED)
 endif (_usebison STREQUAL YES)
+
 if (_uselapack STREQUAL YES)
     find_package (BLAS REQUIRED)
     find_package (LAPACK REQUIRED)
-    if (USE_FFTW3)
-        if (FFTW3_DISABLE_THREADS)
-            find_package (FFTW3 COMPONENTS single double REQUIRED)
-        else()
-            find_package (FFTW3 COMPONENTS single double threads)
-        endif (FFTW3_DISABLE_THREADS)
-    endif (USE_FFTW3)
+    if (FFTW3_DISABLE_THREADS)
+        find_package (FFTW3 COMPONENTS single double REQUIRED)
+    else()
+        find_package (FFTW3 COMPONENTS single double threads REQUIRED)
+    endif (FFTW3_DISABLE_THREADS)
 endif (_uselapack STREQUAL YES)
+
 if (_usefits STREQUAL YES)
     find_package (CFITSIO 3.030 REQUIRED) # Should pad to three decimal digits
 endif (_usefits STREQUAL YES)
+
 if (_usewcs STREQUAL YES)
-#    find_package (WCSLIB 4.20 REQUIRED)
     find_package (WCSLIB 4.7 REQUIRED)     # needed for CASA
     if (WCSLIB_VERSION_STRING STREQUAL "5.14")
       # WCSlib 5.14 throws segfaults on lots of tests, e.g. tTempImage
@@ -391,6 +315,12 @@ endif (_usewcs STREQUAL YES)
 
 # Set the include directories and HAVE compiler variables
 include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})
+if (BUILD_DYSCO)
+    add_definitions(-DHAVE_DYSCO)
+endif (BUILD_DYSCO)
+if (BUILD_SISCO)
+    add_definitions(-DHAVE_SISCO)
+endif (BUILD_SISCO)
 if (WCSLIB_FOUND)
     include_directories (${WCSLIB_INCLUDE_DIRS})
     add_definitions (-DWCSLIB_VERSION_MAJOR=${WCSLIB_VERSION_MAJOR} -DWCSLIB_VERSION_MINOR=${WCSLIB_VERSION_MINOR})
@@ -399,25 +329,30 @@ if (CFITSIO_FOUND)
     include_directories (${CFITSIO_INCLUDE_DIRS})
     add_definitions (-DCFITSIO_VERSION_MAJOR=${CFITSIO_VERSION_MAJOR} -DCFITSIO_VERSION_MINOR=${CFITSIO_VERSION_MINOR})
 endif (CFITSIO_FOUND)
-if (Boost_FOUND)
-    include_directories (${Boost_INCLUDE_DIRS})
-    add_definitions(-DHAVE_BOOST)
-endif (Boost_FOUND)
 if (ADIOS2_FOUND)
     include_directories (${ADIOS2_INCLUDE_DIRS})
     add_definitions(-DHAVE_ADIOS2)
 endif (ADIOS2_FOUND)
 if (HDF5_FOUND)
+    # Use BEFORE to achieve that HDF5 is not taken from /usr/local/include
+    ##include_directories (BEFORE ${HDF5_INCLUDE_DIRS})
     include_directories (${HDF5_INCLUDE_DIRS})
     add_definitions(-DHAVE_HDF5)
+    if (DEFINED "HDF5_hdf5_LIBRARY")
+        set(_hdf5_library "${HDF5_hdf5_LIBRARY}")
+    elseif (DEFINED "HDF5_C_LIBRARY")
+        set(_hdf5_library "${HDF5_C_LIBRARY}")
+    elseif (DEFINED "HDF5_C_LIBRARY_hdf5")
+        set(_hdf5_library "${HDF5_C_LIBRARY_hdf5}")
+    endif ()
 endif (HDF5_FOUND)
-if (FFTW3_FOUND)
-    include_directories (${FFTW3_INCLUDE_DIRS})
-    add_definitions(-DHAVE_FFTW3)
-    if (NOT FFTW3_DISABLE_THREADS)
-        add_definitions(-DHAVE_FFTW3_THREADS)
-    endif (NOT FFTW3_DISABLE_THREADS)
-endif (FFTW3_FOUND)
+
+include_directories (${FFTW3_INCLUDE_DIRS})
+add_definitions(-DHAVE_FFTW3)
+if (NOT FFTW3_DISABLE_THREADS)
+    add_definitions(-DHAVE_FFTW3_THREADS)
+endif (NOT FFTW3_DISABLE_THREADS)
+
 if (DL_FOUND)
     add_definitions(-DHAVE_DL)
 endif (DL_FOUND)
@@ -445,6 +380,7 @@ if(USE_MPI)
     add_definitions(-DHAVE_MPI)
 
     set(ENABLE_TABLELOCKING OFF)
+    set(CASACORE_MPI_LIBRARY ${MPI_C_LIBRARIES})
     message (STATUS "ENABLE_TABLELOCKING is turned off as required by MPI")
 endif(USE_MPI)
 
@@ -460,7 +396,7 @@ if(USE_OPENMP)
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
         endif( )
     else (OPENMP_FOUND)
-        message(WARNING "Cannot fullfill USE_OPENMP, compiler does not support it")
+        message(WARNING "Cannot fulfill USE_OPENMP, compiler does not support it")
     endif (OPENMP_FOUND)
 endif()
 
@@ -474,22 +410,22 @@ if(USE_THREADS)
     elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
     else()
-        if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
         else()
             message(FATAL_ERROR "${_errmsg} (${CMAKE_C_COMPILER_ID}): ${CMAKE_C_COMPILER}")
-        endif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        endif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
     endif(CMAKE_COMPILER_IS_GNUCC)
     if(CMAKE_COMPILER_IS_GNUCXX)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
     else()
-        if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
         elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
         else()
             message(FATAL_ERROR "${_errmsg} (${CMAKE_C_COMPILER_ID}): ${CMAKE_CXX_COMPILER}")
-        endif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        endif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
     endif(CMAKE_COMPILER_IS_GNUCXX)
 else()
     # Compile with -fno-threadsafe-statics if supp to reduce some thread safety overhead.
@@ -533,54 +469,30 @@ if (NOT BUILD_TESTING)
     set(EXCL_ALL EXCLUDE_FROM_ALL)
 endif (NOT BUILD_TESTING)
 
-# Custom SOVERSION for imageanalysis is derived from the casa minor version rather than the casacore minor version.
-# Check git tags for CASA version (currently 6.6.0)
-# If the minor version has changed, bump this:
-set( CASA_PROJECT_SOVERSION   6   )
-
-# Determine the SOVERSION and define as compile variable.
-if (casa_soversion)
-    set (LIB_VERSION "${casa_soversion}")
-    set (LIB_SOVERSION "${casa_soversion}")
-    set (CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib" )
-    set (CASA_LIB_VERSION "${casa_soversion}")
-    set (CASA_LIB_SOVERSION "${casa_soversion}")
-else( )
-    set (LIB_VERSION "${PROJECT_SOVERSION}")
-    set (LIB_SOVERSION "${PROJECT_SOVERSION}")
-    set (CASA_LIB_VERSION "${CASA_PROJECT_SOVERSION}")
-    set (CASA_LIB_SOVERSION "${CASA_PROJECT_SOVERSION}")
-endif( )
+# Define SOVERSION as compile variable.
+set (LIB_VERSION "${PROJECT_SOVERSION}")
+set (LIB_SOVERSION "${PROJECT_SOVERSION}")
 
 # Add the modules to be built.
-add_subdirectory (casa6/casatools/casacore/build-tools)
-add_subdirectory (imageanalysis)
+add_subdirectory (${_casacore_dir}/build-tools)
 foreach (module ${_modules})
-    add_subdirectory (casa6/casatools/casacore/${module})
+    add_subdirectory (${_casacore_dir}/${module})
     set_target_properties(
       casa_${module}
       PROPERTIES
           VERSION "${LIB_VERSION}"
           SOVERSION "${LIB_SOVERSION}"
     )
-    if (CASA_BUILD)
-        if (PYTHON_SHARED_LINKER_FLAGS AND ${module} STREQUAL python)
-            set_target_properties(casa_python PROPERTIES LINK_FLAGS ${PYTHON_SHARED_LINKER_FLAGS})
-        endif (PYTHON_SHARED_LINKER_FLAGS AND ${module} STREQUAL python)
-    endif (CASA_BUILD)
     if (APPLE)
         if (${module} STREQUAL scimath_f OR ${module} STREQUAL fits OR ${module} STREQUAL mirlib OR ${module} STREQUAL coordinates)
             set_target_properties(casa_${module} PROPERTIES LINK_FLAGS -single_module)
         endif (${module} STREQUAL scimath_f OR ${module} STREQUAL fits OR ${module} STREQUAL mirlib OR ${module} STREQUAL coordinates)
     endif (APPLE)
+    set(PRIVATE_LIBS "${PRIVATE_LIBS} -lcasa_${module}")
 endforeach (module)
 
-set_target_properties(
-      casa_imageanalysis
-      PROPERTIES
-          VERSION "${CASA_LIB_VERSION}"
-          SOVERSION "${CASA_LIB_SOVERSION}"
-)
+# Add custom imageanalysis component
+add_subdirectory (imageanalysis)
 
 install(
     FILES scripts/casa_data_autoupdate.sh
@@ -592,6 +504,7 @@ install(
 # Show summary.
 message (STATUS "CMAKE_SYSTEM .......... = ${CMAKE_SYSTEM}")
 message (STATUS "CMAKE_BUILD_TYPE ...... = ${CMAKE_BUILD_TYPE}")
+message (STATUS "UseCcache ............. = ${UseCcache}")
 message (STATUS "Modules to be built ... = ${_modules}")
 message (STATUS "BUILD_SHARED_LIBS ..... = ${BUILD_SHARED_LIBS}")
 message (STATUS "ENABLE_RPATH .......... = ${ENABLE_RPATH}")
@@ -602,6 +515,11 @@ message (STATUS "USE_THREADS ........... = ${USE_THREADS}")
 message (STATUS "USE_OPENMP ............ = ${USE_OPENMP}")
 message (STATUS "USE_MPI ............... = ${USE_MPI}")
 message (STATUS "USE_STACKTRACE ........ = ${USE_STACKTRACE}")
+message (STATUS "BUILD_FFTPACK_DEPRECATED= ${BUILD_FFTPACK_DEPRECATED}")
+message (STATUS "BUILD_DEPRECATED ...... = ${BUILD_DEPRECATED}")
+message (STATUS "BUILD_DYSCO ........... = ${BUILD_DYSCO}")
+message (STATUS "BUILD_SISCO ........... = ${BUILD_SISCO}")
+message (STATUS "BUILD_TESTING ......... = ${BUILD_TESTING}")
 message (STATUS "HAVE_O_DIRECT ......... = ${HAVE_O_DIRECT}")
 message (STATUS "CMAKE_CXX_COMPILER .... = ${CMAKE_CXX_COMPILER}")
 message (STATUS "CMAKE_CXX_FLAGS ....... = ${CMAKE_CXX_FLAGS}")
@@ -614,46 +532,23 @@ message (STATUS "LAPACK library? ....... = ${LAPACK_LIBRARIES}")
 message (STATUS "WCS library? .......... = ${WCSLIB_LIBRARIES}")
 message (STATUS "SOFA library? ......... = ${SOFA_LIBRARIES}")
 message (STATUS "CFitsio library? ...... = ${CFITSIO_LIBRARIES}")
-message (STATUS "ADIOS2 library? ....... = ${ADIOS2_LIBRARIES}")
-message (STATUS "HDF5 library? ......... = ${HDF5_hdf5_LIBRARY}")
+message (STATUS "ADIOS2 library? ....... = ${CASACORE_ADIOS_LIBRARY}")
+message (STATUS "HDF5 library? ......... = ${_hdf5_library}")
 message (STATUS "FFTW3 library? ........ = ${FFTW3_LIBRARIES}")
-message (STATUS "GSL library? .......... = ${GSL_LIBRARIES}")
-message (STATUS "GSL CXXFLAGS? ......... = ${CMAKE_GSL_CXX_FLAGS}")
-
-message (STATUS "BUILD_DEPRECATED ...... = ${BUILD_DEPRECATED}")
-message (STATUS "BUILD_PYTHON .......... = ${BUILD_PYTHON}")
-message (STATUS "BUILD_PYTHON3 ......... = ${BUILD_PYTHON3}")
-
-if (BUILD_PYTHON)
-    message (STATUS "PYTHON2_EXECUTABLE ......... = ${PYTHON2_EXECUTABLE}")
-    message (STATUS "PYTHON2_LIBRARIES........... = ${PYTHON2_LIBRARIES}")
-    message (STATUS "PYTHON2_NUMPY_INCLUDE_DIRS . = ${PYTHON2_NUMPY_INCLUDE_DIRS}")
-    message (STATUS "PYTHON2_Boost_LIBRARIES .... = ${PYTHON2_Boost_LIBRARIES}")
-    message (STATUS "PYTHON2_Boost_INCLUDE_DIRS . = ${PYTHON2_Boost_INCLUDE_DIRS}")
-endif (BUILD_PYTHON)
-
-if (BUILD_PYTHON3)
-    message (STATUS "PYTHON3_EXECUTABLE ......... = ${PYTHON3_EXECUTABLE}")
-    message (STATUS "PYTHON3_LIBRARIES .......... = ${PYTHON3_LIBRARIES}")
-    message (STATUS "PYTHON3_NUMPY_INCLUDE_DIRS . = ${PYTHON3_NUMPY_INCLUDE_DIRS}")
-    message (STATUS "PYTHON3_Boost_LIBRARIES .... = ${PYTHON3_Boost_LIBRARIES}")
-    message (STATUS "PYTHON3_Boost_INCLUDE_DIRS . = ${PYTHON3_Boost_INCLUDE_DIRS}")
-endif (BUILD_PYTHON3)
 
 # List of build variables and defaults.
-#  BUILD_PYTHON                  YES
-#  BUILD_PYTHON3                 NO
-#  BUILD_DEPRECATED            NO
 #  ENABLE_SHARED                 YES
 #  ENABLE_RPATH                  YES
 #  ENABLE_TABLELOCKING           YES
 #  USE_ADIOS2                    NO
-#  USE_HDF5                      NO
-#  USE_FFTW3                     NO
+#  USE_HDF5                      YES
 #  USE_THREADS                   YES
-#  USE_OPENMP                    NO
+#  USE_OPENMP                    YES
 #  USE_MPI                       NO
 #  USE_STACKTRACE                NO
+#  BUILD_DEPRECATED              NO
+#  BUILD_TESTING                 NO
+#  UseCcache                     NO
 #  DATA_DIR                      ${CMAKE_INSTALL_PREFIX}/share/casacore/data
 #  MODULE                        all
 #                                Possible value for MODULE (previous built too):
@@ -677,8 +572,4 @@ endif (BUILD_PYTHON3)
 #  ADIOS2       tables (optional)
 #  LAPACK       scimath
 #  BLAS         scimath
-#  FFTW         scimath (optional)
-#  BOOST        python (Boost-Python only)
-#  PYTHON       python
-#  NUMPY        python
-
+#  FFTW         scimath

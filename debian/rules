@@ -9,7 +9,7 @@ export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 	dh $@ --buildsystem=cmake
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DUSE_THREADS=ON -DDATA_DIR=/var/lib/casacore/data -DUSE_FFTW3=ON -DUSE_HDF5=ON -DBUILD_PYTHON=OFF -DBUILD_PYTHON3=OFF -DBUILD_TESTING=OFF -DUSE_OPENMP=ON -DUseCcache=1 -DHAS_CXX11=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/opt/carta-casacore
+	dh_auto_configure -- -DDATA_DIR=/var/lib/casacore/data -DBUILD_TESTING=OFF -DUseCcache=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/opt/carta-casacore
 
 override_dh_auto_build-indep:
 	doxygen casa6/casatools/casacore/doxygen.cfg
