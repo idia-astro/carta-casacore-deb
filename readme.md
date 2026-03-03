@@ -41,7 +41,7 @@ cd ../
 mkdir -p build
 cd build
 
-cmake .. -DUSE_FFTW3=ON -DUSE_HDF5=ON -DUSE_THREADS=ON -DUSE_OPENMP=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DBUILD_PYTHON=OFF -DUseCcache=1 -DHAS_CXX11=1 -DCMAKE_INSTALL_PREFIX=/opt/carta-casacore
+cmake .. -DCMAKE_BUILD_TYPE=Release -DUseCcache=1 -DCMAKE_INSTALL_PREFIX=/opt/carta-casacore
 make -j8
 sudo make install
 ```
